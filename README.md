@@ -1,20 +1,8 @@
 # XMonad Wayland
 
-[Português do Brasil](README.pt-BR.md)
-
-A Haskell window manager for **River >=0.4+**, using XMonad's unmodified StackSet
+A Haskell window manager for **River >=0.5+**, using XMonad's unmodified StackSet
 for window order, focus and workspaces. River handles graphics, input and
 Wayland/XWayland clients; this project supplies the window-management policy.
-
-**0.4.0 is a development release for GNU Guix.** Since September 2026 it
-runs in a real River login session on a Predator Helios laptop (NVIDIA RTX 4060
-plus Intel) through the SecurityOps channel, and in nested sessions for trying
-it out on any Wayland desktop. Daily-use acceptance — suspend/resume, monitor
-hotplug, screen locking — is still being evaluated. This is an independent
-project, not an official XMonad release; existing X11 `xmonad.hs` files and
-arbitrary `xmonad-contrib` modules are not compatible.
-
-![XMonad Wayland running on River](screenshots/river-xmonad-fastfetch.png)
 
 Unmodified capture from the maintainer's River desktop running XMonad
 Wayland.

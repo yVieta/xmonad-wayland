@@ -4,7 +4,6 @@ VERSION
 Makefile
 LICENSE
 README.md
-README.pt-BR.md
 run.sh
 app
 cbits
@@ -15,12 +14,8 @@ licenses
 protocols
 examples
 docs/INSTALL.md
-docs/INSTALL.pt-BR.md
 docs/CONFIGURATION.md
-docs/CONFIGURATION.pt-BR.md
 docs/SECURITY.md
-docs/SECURITY.pt-BR.md
-docs/PROVENANCE.md
 docs/VERIFICATION.md
 docs/images
 packaging/xmonad-wayland.desktop

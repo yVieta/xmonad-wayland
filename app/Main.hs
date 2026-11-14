@@ -19,7 +19,7 @@ main = do
     ["--recompile"] -> recompile
     ["--help"] -> putStrLn $ unlines
       [ "Usage: xmonad-wayland [--version | --recompile | --help]"
-      , "Run inside River >= 0.4. River classic/0.3 is incompatible."
+      , "Run inside River >= 0.5. River classic/0.3 is incompatible."
       , "Configuration: compile ~/.xmonad/xmonad.hs with --recompile;"
       , "the manager executes the result automatically on start and restart."
       , "Window picker: mod+v labels windows with letters (a-z, 1-9); press a"
