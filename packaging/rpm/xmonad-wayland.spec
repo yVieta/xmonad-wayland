@@ -1,14 +1,13 @@
 # Local source recipe for Fedora; other RPM distributions need native validation.
 # There is no published project download URL: supply Source0 locally.
 Name:           xmonad-wayland
-Version:        0.2.0~dev
+Version:        0.5.1~dev
 Release:        1%{?dist}
 Summary:        Experimental XMonad StackSet window manager for River Wayland
 License:        BSD-3-Clause AND MIT
-Source0:        %{name}-0.2.0-dev.tar.gz
+Source0:        %{name}-0.5.1~dev.tar.gz
 BuildRequires:  gcc
 BuildRequires:  make
-BuildRequires:  /usr/bin/pkg-config
 BuildRequires:  ghc >= 9.0
 BuildRequires:  ghc-base-devel
 BuildRequires:  ghc-containers-devel
@@ -39,7 +38,7 @@ supplies its window-management policy. River classic/0.3 is incompatible.
 Existing arbitrary X11 xmonad.hs and XMonad.Contrib modules are not supported.
 
 %prep
-%setup -q -n %{name}-0.2.0-dev
+%setup -q -n %{name}-0.5.1~dev
 
 %build
 make %{?_smp_mflags} all PREFIX=%{_prefix} CFLAGS="%{optflags}" GHCFLAGS="%{xw_ghcflags}"
@@ -56,9 +55,14 @@ make install PREFIX=%{_prefix} DESTDIR=%{buildroot} GHCFLAGS="%{xw_ghcflags}"
 %{_bindir}/xmonad-wayland
 %{_bindir}/xmonad-wayland-session
 %{_bindir}/xmonad-wayland-doctor
+%{_bindir}/xmonad-wayland-nested.py
+%{_bindir}/xmonad-wayland-sway-input.py
 %{_datadir}/wayland-sessions/xmonad-wayland.desktop
 %{_datadir}/xmonad-wayland
 
 %changelog
+* Tue Sep 22 2026 Local Builder <root@localhost> - 0.5.1~dev-1
+- Release 0.5.1~dev.
+
 * Wed Sep 16 2026 Local Builder <root@localhost> - 0.2.0~dev-1
 - Initial local experimental recipe; not a distribution-maintained package.

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # Build the fixture first; accepts its executable path as the only argument.
 set -eu
 PYTHON=${PYTHON:-python3}

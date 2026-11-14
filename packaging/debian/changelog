@@ -1,3 +1,9 @@
+xmonad-wayland (0.5.1~dev-1) unstable; urgency=low
+
+  * Release 0.5.1~dev.
+
+ -- Local Builder <root@localhost>  Tue, 22 Sep 2026 00:00:00 +0000
+
 xmonad-wayland (0.2.0~dev-1) unstable; urgency=low
 
   * Local experimental source package; independent of upstream XMonad.

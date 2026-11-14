@@ -1,12 +1,20 @@
 PREFIX ?= /usr/local
 DESTDIR ?=
 GHC ?= ghc
+GHC_PKG ?= $(shell command -v $(GHC)-pkg 2>/dev/null || command -v ghc-pkg 2>/dev/null)
 CC ?= cc
 PKG_CONFIG ?= pkg-config
 WAYLAND_SCANNER ?= wayland-scanner
 PYTHON ?= python3
 WAYLAND_PROTOCOLS_DIR ?= $(shell $(PKG_CONFIG) --variable=pkgdatadir wayland-protocols)
-GHCFLAGS ?= -O2 -Wall -threaded
+# Some distributions ship GHC's static boot libraries separately
+# (ghc-static on Arch, for example). Link dynamically when they are absent so a plain
+# "make" works with the compiler found on PATH; keep static linking otherwise.
+XWM_GHC_BASE_DIRS := $(shell $(GHC_PKG) field base library-dirs --simple-output 2>/dev/null)
+XWM_GHC_STATIC_BASE := $(foreach dir,$(XWM_GHC_BASE_DIRS),$(wildcard $(dir)/libHSbase*.a))
+XWM_GHC_DYNAMIC ?= $(if $(XWM_GHC_STATIC_BASE),,-dynamic -fPIC)
+GHCFLAGS ?= -O2 -Wall -threaded $(XWM_GHC_DYNAMIC)
+XWM_GHC_DYNAMIC_FLAGS := $(filter -dynamic -fPIC,$(GHCFLAGS))
 MAIN ?= app/Main.hs
 CFLAGS ?= -O2 -g
 CPPFLAGS += $(shell $(PKG_CONFIG) --cflags wayland-client) -Ibuild -Icbits
@@ -29,9 +37,11 @@ build/BuildInfo.hs: FORCE | build
 	@printf '%s\n' 'module BuildInfo where' \
 	  'ghcPath :: FilePath' 'ghcPath = "$(XWM_GHC_PATH)"' \
 	  'srcDir :: FilePath' 'srcDir = "$(XWM_SRC_DIR)"' \
+	  'vendorDir :: FilePath' 'vendorDir = "$(PREFIX)/share/xmonad-wayland/vendor"' \
 	  'bridgeObjects :: [FilePath]' \
-	  'bridgeObjects = ["$(PREFIX)/share/xmonad-wayland/lib/bridge.o","$(PREFIX)/share/xmonad-wayland/lib/river-window-management-v1-protocol.o","$(PREFIX)/share/xmonad-wayland/lib/river-xkb-bindings-v1-protocol.o","$(PREFIX)/share/xmonad-wayland/lib/river-layer-shell-v1-protocol.o"]' \
-	  'bridgeLibs :: [String]' 'bridgeLibs = words "$(XWM_LDLIBS)"' > $@
+	  'bridgeObjects = ["$(PREFIX)/share/xmonad-wayland/lib/bridge.o","$(PREFIX)/share/xmonad-wayland/lib/river-window-management-v1-protocol.o","$(PREFIX)/share/xmonad-wayland/lib/river-xkb-bindings-v1-protocol.o","$(PREFIX)/share/xmonad-wayland/lib/river-layer-shell-v1-protocol.o","$(PREFIX)/share/xmonad-wayland/lib/wlr-layer-shell-unstable-v1-protocol.o"]' \
+	  'bridgeLibs :: [String]' 'bridgeLibs = words "$(XWM_LDLIBS)"' \
+	  'ghcFlags :: [String]' 'ghcFlags = words "$(XWM_GHC_DYNAMIC_FLAGS)"' > $@
 
 check-deps:
 	$(PKG_CONFIG) --atleast-version=1.20 wayland-client
@@ -54,7 +64,7 @@ build/xmonad-wayland: $(HASKELL) $(MAIN) $(OBJECTS) build/BuildInfo.hs FORCE | b
 	$(GHC) $(GHCFLAGS) -isrc -ivendor -ibuild -i$(dir $(MAIN)) -outputdir build/ghc $(MAIN) $(OBJECTS) $(LDLIBS) $(addprefix -optl,$(LDFLAGS)) -o $@
 
 build/policy-test: tests/PolicyTest.hs $(HASKELL) | build
-	$(GHC) -O1 -Wall -isrc -ivendor -outputdir build/test-ghc tests/PolicyTest.hs -o $@
+	$(GHC) -O1 -Wall $(XWM_GHC_DYNAMIC_FLAGS) -isrc -ivendor -outputdir build/test-ghc tests/PolicyTest.hs -o $@
 
 test-policy: build/policy-test
 	./build/policy-test
@@ -64,7 +74,7 @@ test-protocol: build/xmonad-wayland
 
 build/runtime-test/runtime-test: tests/RuntimeTest.hs tests/runtime_fixture.c $(HASKELL) | build
 	mkdir -p build/runtime-test
-	$(GHC) -Wall -Wno-unused-imports -Werror -threaded -isrc -ivendor -outputdir build/runtime-test tests/RuntimeTest.hs tests/runtime_fixture.c -o $@
+	$(GHC) -Wall -Wno-unused-imports -Werror -threaded $(XWM_GHC_DYNAMIC_FLAGS) -isrc -ivendor -outputdir build/runtime-test tests/RuntimeTest.hs tests/runtime_fixture.c -o $@
 
 test-runtime: build/runtime-test/runtime-test
 	PYTHON="$(PYTHON)" sh tests/runtime_test.sh build/runtime-test/runtime-test
@@ -75,14 +85,14 @@ test-session:
 
 build/keymap-test/keymap-test: tests/KeymapTest.hs $(HASKELL) | build
 	mkdir -p build/keymap-test
-	$(GHC) -O1 -Wall -isrc -ivendor -outputdir build/keymap-test tests/KeymapTest.hs -o $@
+	$(GHC) -O1 -Wall $(XWM_GHC_DYNAMIC_FLAGS) -isrc -ivendor -outputdir build/keymap-test tests/KeymapTest.hs -o $@
 
 test-keymap: build/keymap-test/keymap-test
 	./build/keymap-test/keymap-test
 
 build/sway-policy-test/sway-policy-test: tests/SwayPolicyTest.hs $(HASKELL) | build
 	mkdir -p build/sway-policy-test
-	$(GHC) -O1 -Wall -isrc -ivendor -outputdir build/sway-policy-test tests/SwayPolicyTest.hs -o $@
+	$(GHC) -O1 -Wall $(XWM_GHC_DYNAMIC_FLAGS) -isrc -ivendor -outputdir build/sway-policy-test tests/SwayPolicyTest.hs -o $@
 
 test-sway-policy: build/sway-policy-test/sway-policy-test
 	./build/sway-policy-test/sway-policy-test
@@ -99,7 +109,7 @@ test-source-archive:
 
 build/pointer-policy-test/pointer-policy-test: tests/PointerPolicyTest.hs $(HASKELL) | build
 	mkdir -p build/pointer-policy-test
-	$(GHC) -O1 -Wall -isrc -ivendor -outputdir build/pointer-policy-test tests/PointerPolicyTest.hs -o $@
+	$(GHC) -O1 -Wall $(XWM_GHC_DYNAMIC_FLAGS) -isrc -ivendor -outputdir build/pointer-policy-test tests/PointerPolicyTest.hs -o $@
 
 test-pointer-policy: build/pointer-policy-test/pointer-policy-test
 	./build/pointer-policy-test/pointer-policy-test
@@ -109,13 +119,13 @@ test-pointer-protocol: build/xmonad-wayland
 
 build/xconfig-test/xconfig-test: tests/XConfigTest.hs $(HASKELL) $(OBJECTS) | build
 	mkdir -p build/xconfig-test
-	$(GHC) -O1 -Wall -isrc -ivendor -outputdir build/xconfig-test tests/XConfigTest.hs $(OBJECTS) $(LDLIBS) $(addprefix -optl,$(LDFLAGS)) -o $@
+	$(GHC) -O1 -Wall $(XWM_GHC_DYNAMIC_FLAGS) -isrc -ivendor -outputdir build/xconfig-test tests/XConfigTest.hs $(OBJECTS) $(LDLIBS) $(addprefix -optl,$(LDFLAGS)) -o $@
 
 test-xconfig: build/xconfig-test/xconfig-test
 	./build/xconfig-test/xconfig-test
 
 test-xconfig-sample:
-	$(GHC) -isrc -ivendor -fno-code tests/sample-xmonad.hs
+	$(GHC) $(XWM_GHC_DYNAMIC_FLAGS) -isrc -ivendor -fno-code tests/sample-xmonad.hs
 
 test: test-policy test-protocol test-runtime test-session test-keymap test-sway-policy test-bindings-protocol test-source-archive test-pointer-policy test-pointer-protocol test-xconfig test-xconfig-sample
 

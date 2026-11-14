@@ -77,6 +77,7 @@ suspend/resume, screen-lock recovery and sustained daily use remain unverified.
 Testing currently stays inside Sway at the user's request. The replacement
 system configuration remains a candidate and has not been activated.
 
-The present target is GNU Guix. Earlier experiments with other distributions are
-outside this release scope. No production, external security audit, upstream
+GNU Guix remains the primary pinned target. Native source builds on other Linux
+distributions use the same Makefile and tests; per-target validation is recorded
+in [PLATFORMS.md](PLATFORMS.md). No production, external security audit, upstream
 endorsement or arbitrary XMonad/contrib compatibility is claimed.

@@ -2,7 +2,7 @@
 
 [Português do Brasil](README.pt-BR.md)
 
-A Haskell window manager for **River 0.4+**, using XMonad's unmodified StackSet
+A Haskell window manager for **River >=0.4+**, using XMonad's unmodified StackSet
 for window order, focus and workspaces. River handles graphics, input and
 Wayland/XWayland clients; this project supplies the window-management policy.
 
@@ -39,10 +39,16 @@ again. Other outer compositors may need their own shortcut setup. Close the
 River window when finished. The launcher prints a private diagnostics directory.
 See the [installation guide](docs/INSTALL.md) for NVIDIA setup and troubleshooting.
 
-The build script uses pinned Guix dependencies and River 0.4.8, runs package
+The build script uses pinned Guix dependencies and River >=0.4.8, runs package
 tests, and creates `build/guix-runtime` with the manager, River, Foot, Fuzzel
 and fonts. It leaves your default profile, channels and login session unchanged.
 The first build can take a while; it prints the build-log path.
+
+On other Linux distributions, Guix is not required: install the distribution
+packages listed in the [installation guide](docs/INSTALL.md#native-linux-build-non-guix),
+then run `make && sudo make install` (or `make PREFIX=/usr` for packaging).
+The Makefile follows the distribution compiler and adapts to split GHC static
+libraries automatically.
 
 ## Default keyboard controls
 

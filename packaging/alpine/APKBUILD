@@ -2,8 +2,10 @@
 # Copy the source tarball beside this file, then run `abuild checksum` to replace
 # the empty checksum list with the actual digest before `abuild -r`.
 pkgname=xmonad-wayland
-pkgver=0.2.0_pre20260916
-_sourcever=0.2.0-dev
+# apk accepts '~' only before a hexadecimal commit hash, not '~dev'; use the
+# equivalent pre-release suffix while the source archive keeps 0.5.1~dev.
+pkgver=0.5.1_pre
+_sourcever=0.5.1~dev
 pkgrel=0
 pkgdesc="Experimental XMonad StackSet window manager for River Wayland"
 # This unpublished local package links to its installed documentation.

@@ -1,6 +1,6 @@
 module Main (main) where
 
-import BuildInfo (bridgeLibs, bridgeObjects, ghcPath, srcDir)
+import BuildInfo (bridgeLibs, bridgeObjects, ghcFlags, ghcPath, srcDir, vendorDir)
 import Control.Monad (unless)
 import System.Directory (createDirectoryIfMissing, doesFileExist, findExecutable)
 import System.Environment (getArgs, lookupEnv)
@@ -15,7 +15,7 @@ main = do
   arguments <- getArgs
   case arguments of
     [] -> runCompiledOrDefault
-    ["--version"] -> putStrLn "xmonad-wayland 0.5.0 (XMonad StackSet policy for River Wayland)"
+    ["--version"] -> putStrLn "xmonad-wayland 0.5.1~dev (XMonad StackSet policy for River Wayland)"
     ["--recompile"] -> recompile
     ["--help"] -> putStrLn $ unlines
       [ "Usage: xmonad-wayland [--version | --recompile | --help]"
@@ -61,7 +61,8 @@ recompile = do
   createDirectoryIfMissing True directory
   compiler <- findCompiler
   callProcess compiler $
-    [ "--make", input, "-i" ++ srcDir, "-threaded", "-rtsopts"
+    [ "--make", input, "-i" ++ srcDir, "-i" ++ vendorDir, "-threaded" ] ++ ghcFlags ++
+    [ "-rtsopts"
     , "-outputdir", directory ++ "/xmonad-wayland-build"
     , "-o", output ] ++ bridgeObjects ++ bridgeLibs
   putStrLn ("configuration compiled: " ++ output)

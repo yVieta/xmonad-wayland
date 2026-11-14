@@ -15,17 +15,21 @@ if [ -f "$profile/etc/profile" ]; then
     PATH=$profile/bin:$PATH
     export PATH
 fi
-if [ -x "$project/build/guix-river/bin/river" ]; then
+if [ -z "${XMONAD_WAYLAND_RIVER:-}" ] && [ -x "$project/build/guix-river/bin/river" ]; then
     XMONAD_WAYLAND_RIVER=$project/build/guix-river/bin/river
     export XMONAD_WAYLAND_RIVER
 fi
-if [ -x "$project/build/guix-manager/bin/xmonad-wayland" ]; then
-    XMONAD_WAYLAND_MANAGER=$project/build/guix-manager/bin/xmonad-wayland
-elif [ -x "$project/build/xmonad-wayland" ]; then
-    XMONAD_WAYLAND_MANAGER=$project/build/xmonad-wayland
-else
-    echo 'Build first: ./scripts/guix-build (Guix), or make CC=gcc (native source).' >&2
-    exit 1
+if [ -z "${XMONAD_WAYLAND_MANAGER:-}" ]; then
+    if [ -x "$project/build/guix-manager/bin/xmonad-wayland" ]; then
+        XMONAD_WAYLAND_MANAGER=$project/build/guix-manager/bin/xmonad-wayland
+    elif [ -x "$project/build/xmonad-wayland" ]; then
+        XMONAD_WAYLAND_MANAGER=$project/build/xmonad-wayland
+    elif command -v xmonad-wayland >/dev/null 2>&1; then
+        XMONAD_WAYLAND_MANAGER=$(command -v xmonad-wayland)
+    else
+        echo 'Build first: make (native Linux), ./scripts/guix-build (Guix), or install the package.' >&2
+        exit 1
+    fi
 fi
 export XMONAD_WAYLAND_MANAGER
 if [ "${1:-}" = --doctor ]; then

@@ -29,6 +29,27 @@ jobs:
           test -f /usr/share/wayland-sessions/xmonad-wayland.desktop
           test -f /usr/share/xmonad-wayland/VERSION
 
+  arch:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install native build dependencies
+        run: |
+          pacman -Syu --noconfirm --needed base-devel ca-certificates git ghc pkgconf wayland wayland-protocols python
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Build and test with the distribution toolchain
+        run: |
+          make check-deps
+          make -j2
+          make test
+      - name: Install into a staging root
+        run: |
+          make DESTDIR="$RUNNER_TEMP/stage" PREFIX=/usr install
+          test -x "$RUNNER_TEMP/stage/usr/bin/xmonad-wayland"
+          test -x "$RUNNER_TEMP/stage/usr/bin/xmonad-wayland-session"
+          test -x "$RUNNER_TEMP/stage/usr/bin/xmonad-wayland-doctor"
+          test -f "$RUNNER_TEMP/stage/usr/share/wayland-sessions/xmonad-wayland.desktop"
+
   fedora:
     runs-on: ubuntu-latest
     container: registry.fedoraproject.org/fedora:44

@@ -32,7 +32,7 @@ Other distribution recipes have not been built natively here.
 | Fedora 45 / Rawhide | Same RPM recipe; rebuild natively | Official index lists River 0.4.8; no native validation of these releases here |
 | Fedora 43 / enterprise derivatives | Source candidate | Fedora 43 River 0.3.14 is incompatible; dependencies vary on derivatives |
 | openSUSE | RPM source candidate | GHC package names and compatible River availability require native validation |
-| Arch Linux x86_64 | Local PKGBUILD | Official Extra contains River 0.4.8; `ghc-static` is required for compilation |
+| Arch Linux x86_64 | Native `make` or local PKGBUILD | Official Extra contains River 0.4.8; the Makefile links dynamically when `ghc-static` is absent, otherwise install `ghc-static` |
 | Alpine edge x86_64 | Local APKBUILD | Community contains River 0.4.8; rebuild for musl with `ghc-dev` |
 | FreeBSD | Local ports recipe | Current ports contains River 0.4.8; quarterly package sets can differ; native build and runtime remain unverified |
 | OpenBSD current | Native source build | Ports contains River 0.4.5 and OpenBSD-specific evdev/input dependencies; native manager execution unverified |

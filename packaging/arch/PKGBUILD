@@ -1,8 +1,8 @@
 # Local source recipe; unbuilt on Arch. Place the supplied source archive here.
 # Run updpkgsums before makepkg to record the actual local archive checksum.
 pkgname=xmonad-wayland
-pkgver=0.2.0.dev
-_sourcever=0.2.0-dev
+pkgver=0.5.1~dev
+_sourcever=0.5.1~dev
 pkgrel=1
 pkgdesc='Experimental XMonad StackSet window manager for River Wayland'
 arch=('x86_64')

@@ -59,10 +59,12 @@
 
 (package
   (name "xmonad-wayland")
-  (version "0.5.0")
+  ;; Guix store names reject '~', so use the Debian-style 0.5.1-dev spelling
+  ;; here while VERSION/upstream keep 0.5.1~dev.
+  (version "0.5.1-dev")
   (source
    (local-file %source-directory
-               "xmonad-wayland-0.5.0-source"
+               "xmonad-wayland-0.5.1-dev-source"
                #:recursive? #t
                #:select? public-source?))
   (build-system gnu-build-system)

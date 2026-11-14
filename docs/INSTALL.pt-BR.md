@@ -1,4 +1,4 @@
-# Instalar e executar no GNU Guix
+# Instalar e executar no Linux
 
 [English](INSTALL.md) · [Visão geral do projeto](../README.pt-BR.md)
 
@@ -7,6 +7,45 @@ um desktop Wayland existente. No notebook do mantenedor, uma sessão física
 de login com o River está em uso desde setembro de 2026; os passos abaixo
 documentam a forma portátil e aninhada de experimentar o gerenciador em
 qualquer lugar.
+
+O GNU Guix continua sendo a compilação principal, com dependências fixadas
+abaixo. A mesma árvore de código também compila e executa com o conjunto de
+ferramentas nativo de outras distribuições Linux.
+
+## Compilação nativa no Linux (sem Guix)
+
+São necessários GHC >= 9.0, make, compilador C11, pkg-config (ou pkgconf), os
+arquivos de desenvolvimento do cliente Wayland com `wayland-scanner` >= 1.20 e
+Python 3 para a suíte de testes e o auxiliar de sessão aninhada. Nomes típicos
+dos pacotes:
+
+| Distribuição | Pacotes de compilação |
+| --- | --- |
+| Debian / Ubuntu | `build-essential ghc pkg-config libwayland-dev libwayland-bin python3` |
+| Fedora | `gcc make ghc ghc-*-devel pkgconf-pkg-config wayland-devel wayland-protocols-devel python3` |
+| Arch Linux | `base-devel ghc pkgconf wayland wayland-protocols python` |
+| Alpine | `build-base ghc ghc-dev pkgconf wayland-dev wayland-protocols python3` |
+
+Compile, teste e instale a partir do diretório do projeto:
+
+```sh
+make check-deps
+make
+make test          # opcional, mas recomendado
+sudo make install  # PREFIX padrão é /usr/local; pacotes usam PREFIX=/usr
+```
+
+Algumas distribuições mantêm as bibliotecas estáticas do GHC em um pacote
+separado (`ghc-static` no Arch, por exemplo). O Makefile detecta isso e liga o
+gerenciador dinamicamente usando o compilador encontrado no `PATH`; instalar o
+pacote estático mantém a compilação estática anterior. Receitas de pacote devem
+adicionar a dependência de execução correspondente (por exemplo `ghc`) quando
+usarem a ligação dinâmica.
+
+Execute a partir da árvore com `./run.sh --doctor` e `./run.sh --nested`, ou
+após instalar com `xmonad-wayland-doctor` e `xmonad-wayland-session --nested`.
+Os dois caminhos precisam do River >= 0.4 da distribuição ou de uma instalação
+separada.
 
 ## Compilar o perfil local
 

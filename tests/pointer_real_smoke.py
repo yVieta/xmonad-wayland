@@ -61,7 +61,7 @@ def main():
         subprocess.run(['gcc', '-std=c11', '-Wall', '-Wextra', '-Werror', '-I' + str(runtime),
                         str(ROOT / 'tests/pointer_probe.c'), *sources, *flags, '-o', str(probe_binary)], check=True)
         init = runtime / 'init'
-        init.write_text('#!/bin/sh\nprintf "%s" "$WAYLAND_DISPLAY" > "$XW_SOCKET_FILE"\nexec env WAYLAND_DEBUG=client "$XW_MANAGER" 2> "$XW_MANAGER_LOG"\n')
+        init.write_text('#!/usr/bin/env sh\nprintf "%s" "$WAYLAND_DISPLAY" > "$XW_SOCKET_FILE"\nexec env WAYLAND_DEBUG=client "$XW_MANAGER" 2> "$XW_MANAGER_LOG"\n')
         init.chmod(0o755)
         env = dict(os.environ, XDG_RUNTIME_DIR=str(runtime), WLR_BACKENDS='headless', WLR_HEADLESS_OUTPUTS='1',
                    WLR_RENDERER='pixman', WLR_LIBINPUT_NO_DEVICES='1', XW_INIT=str(init),

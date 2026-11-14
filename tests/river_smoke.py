@@ -50,7 +50,7 @@ def main():
         runtime.chmod(0o700)
         init = runtime / "init"
         # Values cross the shell boundary through quoted environment variables.
-        init.write_text('#!/bin/sh\nprintf "%s" "$WAYLAND_DISPLAY" > "$XW_SOCKET_FILE"\n'
+        init.write_text('#!/usr/bin/env sh\nprintf "%s" "$WAYLAND_DISPLAY" > "$XW_SOCKET_FILE"\n'
                         'exec env WAYLAND_DEBUG=client "$XW_MANAGER" 2> "$XW_MANAGER_LOG"\n')
         init.chmod(0o755)
         env = dict(os.environ, XDG_RUNTIME_DIR=str(runtime), WLR_BACKENDS=args.backend,

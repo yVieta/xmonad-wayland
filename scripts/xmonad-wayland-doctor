@@ -6,7 +6,7 @@ failed=0
 printf 'Platform: %s %s\n' "$(uname -s)" "$(uname -m)"
 script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 if [ -x "$script_dir/xmonad-wayland-session" ]; then
-    sh "$script_dir/xmonad-wayland-session" --check || failed=1
+    "$script_dir/xmonad-wayland-session" --check || failed=1
 else
     echo 'Session launcher is missing.' >&2
     failed=1

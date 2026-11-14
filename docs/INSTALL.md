@@ -1,4 +1,4 @@
-# Install and run on GNU Guix
+# Install and run on Linux
 
 [Português do Brasil](INSTALL.pt-BR.md) · [Project overview](../README.md)
 
@@ -7,7 +7,44 @@ Wayland desktop. On the maintainer's laptop a physical River login session has
 been running since September 2026; the steps below document the portable,
 nested way of trying the manager anywhere.
 
-## Build the local profile
+GNU Guix remains the primary, pinned build below. The same source tree also
+builds and runs with the native toolchain of other Linux distributions.
+
+## Native Linux build (non-Guix)
+
+You need GHC >= 9.0, make, a C11 compiler, pkg-config (or pkgconf), Wayland
+client development files with `wayland-scanner` >= 1.20, and Python 3 for the
+test suite and the nested-session helper. Typical package names are:
+
+| Distribution | Build packages |
+| --- | --- |
+| Debian / Ubuntu | `build-essential ghc pkg-config libwayland-dev libwayland-bin python3` |
+| Fedora | `gcc make ghc ghc-*-devel pkgconf-pkg-config wayland-devel wayland-protocols-devel python3` |
+| Arch Linux | `base-devel ghc pkgconf wayland wayland-protocols python` |
+| Alpine | `build-base ghc ghc-dev pkgconf wayland-dev wayland-protocols python3` |
+
+Build, test and install from the project directory:
+
+```sh
+make check-deps
+make
+make test          # optional, but recommended
+sudo make install  # PREFIX defaults to /usr/local; packages use PREFIX=/usr
+```
+
+Some distributions keep GHC's static boot libraries in a separate package
+(`ghc-static` on Arch, for example). The Makefile detects this and links the
+manager dynamically with the compiler found on `PATH`; installing that static
+package keeps the previous static-link build. Package recipes should add the
+matching runtime dependency (for example `ghc`) when they rely on the dynamic
+fallback.
+
+Run it from the checkout with `./run.sh --doctor` and `./run.sh --nested`, or
+after installation with `xmonad-wayland-doctor` and
+`xmonad-wayland-session --nested`. Both paths need River >= 0.4 from the
+distribution or a separate installation.
+
+## Build the local Guix profile
 
 You need a working Guix installation with access to its build daemon, this source
 checkout and internet access for uncached dependencies. Run these commands from
